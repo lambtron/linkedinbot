@@ -12,7 +12,7 @@ var _page;
 
 var auth = {
   user: "andyjiang+@gmail.com",
-  pass: "mengfei8*"
+  pass: "rainforestqa"
 };
 
 phantom.create(function (ph) {
