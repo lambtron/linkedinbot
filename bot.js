@@ -1,6 +1,6 @@
 var auth = {
   user: "andyjiang+@gmail.com",
-  pass: "mengfei8*"
+  pass: "rainforestqa"
 };
 
 var page = require("webpage").create();
