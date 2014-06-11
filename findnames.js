@@ -41,8 +41,8 @@ phantom.create(function (ph) {
         });
         setTimeout(function() {
           _page.evaluate(function() {
-            document.querySelector("#session_key-login").value = 'andyjiang@gmail.com';
-            document.querySelector("#session_password-login").value = 'mengfei8*';
+            document.querySelector("#session_key-login").value = auth.user;
+            document.querySelector("#session_password-login").value = auth.pass;
             document.querySelector("#login").submit();
      
             console.log("Login submitted!");

@@ -2,6 +2,7 @@ var auth = {
   user: "andyjiang+@gmail.com",
   pass: "rainforestqa"
 };
+// require('./config/config');
 
 var page = require("webpage").create();
 
