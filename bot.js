@@ -2,9 +2,10 @@ var auth = {
   user: "andyjiang+@gmail.com",
   pass: "rainforestqa"
 };
-// require('./config/config');
 
 var page = require("webpage").create();
+var creep = require("webpage").create();
+var fs = require("fs");
 
 page.open("http://www.linkedin.com/people/connections", function(status) {
   if (status === "success") {
@@ -50,9 +51,6 @@ page.open("http://www.linkedin.com/people/connections", function(status) {
         var collectLinks = function collectLinks () {
           // get links from page.
           names = page.evaluate(function() {
-
-            page.render('linkedin.png');
-
             var links = [];
             var anchorElements = document.querySelectorAll(".title");
             for (var i = 0; i < anchorElements.length; i++ ) {
@@ -63,7 +61,43 @@ page.open("http://www.linkedin.com/people/connections", function(status) {
           });
 
           links.push.apply(links, names);
-          console.log(names);
+
+          // fs.appendFile('linkedIn.txt', names, function (err) {
+          //   console.log(err);
+          // });
+          fs.write("linkedIn.txt", names, 'a');
+    
+          // creep.open(names[0], function (status) {
+          //   console.log(status);
+          //   creep.render('google.png');
+          //   creep.close();
+          // });
+
+          // window.setTimeout(function() {
+          //   creep.open(names[1], function (status) {
+          //     console.log(status);
+          //     creep.render('google2.png');
+          //     creep.close();
+          //   });
+          // }, 2000);
+
+          page.render('hanging.png');
+
+          // Go to sites.
+          // for (var i = 0; i < names.length; i++) {
+          //   (function (i) {
+          //     // console.log(names[i] + '\n\n');
+          //     creep.open('https://www.google.com', function (status) {
+          //       console.log('i am in ' + i);
+          //       console.log(status);
+          //       console.log(names[i]);
+          //       var filename = 'name' + i + '.png';
+          //       creep.render(filename);
+          //       creep.close();
+          //     });
+          //   })(i);
+          // }
+
 
           // Click on next.
           page.evaluate(function() {
@@ -88,6 +122,7 @@ page.open("http://www.linkedin.com/people/connections", function(status) {
         var timerId = 0;
         if (timerId)
           window.clearInterval(timerId);
+        
         timerId = window.setInterval(collectLinks, 10000);
 
         window.setTimeout(function() {
@@ -96,52 +131,13 @@ page.open("http://www.linkedin.com/people/connections", function(status) {
 
           console.log('\n\n\n\nfinal links:');
           console.log('\n' + links.length + '\n\n');
-          console.log(links);
 
           page.render('linkedin-final.png');
 
           phantom.exit(0);
-        }, 32000);
+        }, 30000);
 
       });
     }, 4000);
-
-    // Go to a contact.
-    // window.setTimeout(function() {
-    //   console.log("Going to Andy's Linkedin account.");
-    //   page.open("https://www.linkedin.com/in/andyjiang", function(status) {
-    //     if (status === "success")
-    //       console.log("On Andy's Linkedin page. Can he see me?");
-        
-    //     page.render('linkedin.png');
-    //   });
-    // }, 6000);
-
-    // window.setTimeout(function() {
-    //   console.log("Get names");
-    //   names = page.evaluate(function() {
-    //     var all = document.querySelectorAll(".conx-list li");
-    //     var list = [];
-    //     for (var i = all.length - 1; i >= 0; i--) {
-    //       var item = all[i];
-    //       if (item.hasOwnProperty("id")) {
-    //         var nameInputs = item.getElementsByTagName("input");
-    //         if (nameInputs.length > 0) {
-    //           console.log(nameInputs[0].value, item.id);
-    //           list.push({
-    //             name: nameInputs[0].value,
-    //             href: "http://www.linkedin.com/profile/view?id=" + item.id
-    //           });
-    //         }
-    //       }
-    //     }
-    //     console.log("Got " + list.length + " names");
-    //     return list;
-    //   });
- 
-    //   var a = new ParallelRunner(names, visitAndEndorse, 3);
-    //   a.start();
- 
-    // }, 6000);
   }
 });
