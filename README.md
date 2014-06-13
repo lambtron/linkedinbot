@@ -9,7 +9,7 @@ Install [PhantomJS](http://phantomjs.org/download.html)
 Change credentials in bot.js
 
 ```bash
-phantomjs bot.js
+phantomjs scraper.js
 ```
 
 ???
