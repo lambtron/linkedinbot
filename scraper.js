@@ -26,6 +26,22 @@ page.onAlert = function(msg) {
   console.log('alert!!> ' + msg);
 };
 
+/**
+ * Universal click function.
+ */
+function click(el) {
+  var ev = document.createEvent("MouseEvent");
+  ev.initMouseEvent(
+    "click",
+    true /* bubble */ , true /* cancelable */ ,
+    window, null,
+    0, 0, 0, 0, /* coordinates */
+    false, false, false, false, /* modifier keys */
+    0 /*left*/ , null
+  );
+  el.dispatchEvent(ev);
+}
+
 // Log in.
 page.open("https://www.linkedin.com/uas/login", function(status) {
   if (status === "success") {
@@ -47,54 +63,89 @@ page.open("https://www.linkedin.com/uas/login", function(status) {
           // Collect links. Then go to next page.
           var loop = function loop() {
             // Save screenshot for debugging purposes
-            page.render("step " + stepIndex+++".png");
+            page.render("data/img/step " + stepIndex+++".png");
 
             // State is initially empty. State is persisted between page loads and can be used for identifying which page we're on.
             console.log('============================================');
             console.log('Page ' + stepIndex + '');
             console.log('============================================');
 
-            links = page.evaluate(function() {
-              var links = [];
-              var anchorElements = document.querySelectorAll("a.title");
-              for (var i = 0; i < anchorElements.length; i++) {
-                if (anchorElements[i] && anchorElements[i].href != "")
-                  links.push(anchorElements[i].href);
-                if (i == anchorElements.length - 1)
-                  return links;
-              }
-            });
+            // var links = page.evaluate(function() {
+            //   var links = [];
+            //   var anchorElements = document.querySelectorAll("a.title");
+            //   for (var i = 0; i < anchorElements.length; i++) {
+            //     if (anchorElements[i] && anchorElements[i].href != "")
+            //       links.push(anchorElements[i].href);
+            //     if (i == anchorElements.length - 1)
+            //       return links;
+            //   }
+            // });
 
-            fs.write("linkedIn.txt", links, 'a');
+            var links = [0,1,2,3,4,5,6,7,8,9];
+
+            // CREEP.
+            function peek(index, cb) {
+              page.evaluate(function(index) {
+                var anchorElements = document.querySelectorAll("a.title");
+
+                function click(el) {
+                  var ev = document.createEvent("MouseEvent");
+                  ev.initMouseEvent(
+                    "click",
+                    true /* bubble */ , true /* cancelable */ ,
+                    window, null,
+                    0, 0, 0, 0, /* coordinates */
+                    false, false, false, false, /* modifier keys */
+                    0 /*left*/ , null
+                  );
+                  el.dispatchEvent(ev);
+                }
+
+                click(anchorElements[index]);
+              }, index);
+
+              // Wait 10 seconds
+              window.setTimeout(function (){
+                page.render('profile-' + stepIndex + '-' + index + '.png');
+                page.goBack();
+              }, 10000);
+
+              // Go back
+              window.setTimeout(function () {
+                cb.apply();
+              }, 5000);
+            }
+
+            function process () {
+              if (links.length > 0) {
+                var link = links[0];
+                var linksJSON = JSON.stringify(links).replace(link + ',', '');
+                links = JSON.parse(linksJSON);
+                peek(link, process);
+              } else {
+                console.log('over');
+              }
+            }
+
+            // console.log(links[0]);
+            process();
+
+            // fs.write("data/txt/linkedIn-" + stepIndex + ".txt", links, 'w');
 
             // Click on next.
-            page.evaluate(function() {
-              function click(el) {
-                var ev = document.createEvent("MouseEvent");
-                ev.initMouseEvent(
-                  "click",
-                  true /* bubble */ , true /* cancelable */ ,
-                  window, null,
-                  0, 0, 0, 0, /* coordinates */
-                  false, false, false, false, /* modifier keys */
-                  0 /*left*/ , null
-                );
-                el.dispatchEvent(ev);
-              }
-
+            page.evaluate(function(click) {
               var next = document.querySelector('a[rel="next"]');
               click(next);
-            });
+            }, click);
           };
+
+          var timerId = 0;
+          if (timerId)
+            window.clearInterval(timerId);
+
+          loop();
+          timerId = window.setInterval(loop, 150000);
         }
-
-        var timerId = 0;
-        if (timerId)
-          window.clearInterval(timerId);
-
-        loop();
-        timerId = window.setInterval(loop, 50000);
-
       });
     }, 5000);
   }
