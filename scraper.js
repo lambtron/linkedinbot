@@ -25,6 +25,13 @@ page.onConsoleMessage = function(msg, line, source) {
 page.onAlert = function(msg) {
   console.log('alert!!> ' + msg);
 };
+/**
+ * Get error reason.
+ */
+page.onResourceError = function(resourceError) {
+    page.reason = resourceError.errorString;
+    page.reason_url = resourceError.url;
+};
 
 /**
  * Universal click function.
@@ -148,5 +155,8 @@ page.open("https://www.linkedin.com/uas/login", function(status) {
         }
       });
     }, 5000);
+  }
+  else {
+    console.log("Error opening url \"" + page.reason_url + "\": " + page.reason);
   }
 });
