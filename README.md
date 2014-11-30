@@ -6,10 +6,10 @@ Swap out your credentials and let all of linkedin know that you've been stalking
 
 Install [PhantomJS](http://phantomjs.org/download.html)
 
-Change credentials in bot.js
+Change credentials in scraper.js
 
 ```bash
-phantomjs scraper.js
+phantomjs --ssl-protocol=any --web-security=false scraper.js
 ```
 
 ???
